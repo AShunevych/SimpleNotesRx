@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import kotlinx.coroutines.CoroutineScope
 
-@Database(entities = [NoteItem::class],version = 1,exportSchema = false)
+@Database(entities = [NoteEntity::class],version = 1,exportSchema = false)
 abstract class NoteDatabase : RoomDatabase() {
 
     abstract fun notesDao():NoteDao

@@ -2,26 +2,29 @@ package com.ashunevich.simplenotes
 
 import android.app.Application
 import androidx.lifecycle.*
-import androidx.room.RoomDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class NoteViewModel (application: Application) : AndroidViewModel(application) {
 
     private val repository: NoteRepository
-    val allNotes: LiveData<List<NoteItem>>
+    val allNotes: LiveData<List<NoteEntity>>
     init {
         val notesDao = NoteDatabase.getDatabase(application,viewModelScope).notesDao()
         repository = NoteRepository(notesDao)
         allNotes= repository.allNotes
     }
 
-    fun insert(noteItem: NoteItem) = viewModelScope.launch(Dispatchers.IO ){
-        repository.insert(noteItem)
+    fun insert(noteEntity: NoteEntity) = viewModelScope.launch(Dispatchers.IO ){
+        repository.insert(noteEntity)
     }
 
-    fun delete(noteItem: NoteItem) = viewModelScope.launch(Dispatchers.IO ){
-        repository.delete(noteItem)
+    fun delete(noteEntity: NoteEntity) = viewModelScope.launch(Dispatchers.IO ){
+        repository.delete(noteEntity)
+    }
+
+    fun update(noteEntity: NoteEntity) = viewModelScope.launch(Dispatchers.IO ){
+        repository.update(noteEntity)
     }
 
 }
