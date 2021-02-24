@@ -19,8 +19,8 @@ class NoteActivity:AppCompatActivity() {
     }
 
     companion object {
-        const val EXTRA_REPLY = "com.example.android.wordlistsql.REPLY"
-        const val EXTRA_REPLY_1 = "com.example.android.wordlistsql.REPLY1"
+        const val MAIN_TEXT = "mainText"
+        const val TAG_TEXT = "tagText"
     }
 
     private fun okOkResult(){
@@ -30,8 +30,8 @@ class NoteActivity:AppCompatActivity() {
             finish()
         }
         else{
-            replyIntent.putExtra("mainText",binding?.noteText?.text)
-            replyIntent.putExtra("tagText",binding?.tagText?.text)
+            replyIntent.putExtra(MAIN_TEXT,binding?.noteText?.text.toString())
+            replyIntent.putExtra(TAG_TEXT,binding?.tagText?.text.toString())
             setResult(Activity.RESULT_OK,replyIntent)
             finish()
         }

@@ -7,11 +7,10 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.ashunevich.simplenotes.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var model: RoomViewModel
+    private lateinit var model: NoteViewModel
     private val newWordActivityRequestCode = 1
     private var binding: ActivityMainBinding? = null
     private val listContentArr: List<NoteItem> = ArrayList()
@@ -31,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setRecyclerView(){
-        model = ViewModelProvider(this).get(RoomViewModel::class.java)
+        model = ViewModelProvider(this).get(NoteViewModel::class.java)
         adapter = RecyclerViewAdapter(listContentArr)
         binding?.recyclerView?.layoutManager = LinearLayoutManager(this)
         binding?.recyclerView?.adapter = adapter
@@ -48,7 +47,9 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == newWordActivityRequestCode && resultCode == Activity.RESULT_OK) {
             intentData?.let { data ->
                 val note =
-                    NoteItem(23 , "12/23/201", data.getStringExtra("mainText"), data.getStringExtra("tagText"))
+                    NoteItem(2 , "12/23/201",
+                            data.getStringExtra(NoteActivity.MAIN_TEXT),
+                            data.getStringExtra(NoteActivity.TAG_TEXT))
                 model.insert(note)
             }
         }

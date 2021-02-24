@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class RoomViewModel (application: Application) : AndroidViewModel(application) {
+class NoteViewModel (application: Application) : AndroidViewModel(application) {
 
     private val repository: NoteRepository
     val allNotes: LiveData<List<NoteItem>>
@@ -18,6 +18,10 @@ class RoomViewModel (application: Application) : AndroidViewModel(application) {
 
     fun insert(noteItem: NoteItem) = viewModelScope.launch(Dispatchers.IO ){
         repository.insert(noteItem)
+    }
+
+    fun delete(noteItem: NoteItem) = viewModelScope.launch(Dispatchers.IO ){
+        repository.delete(noteItem)
     }
 
 }

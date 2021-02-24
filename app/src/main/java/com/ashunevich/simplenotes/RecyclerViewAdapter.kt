@@ -24,8 +24,9 @@ class RecyclerViewAdapter (val items : List<NoteItem>) : RecyclerView.Adapter<Re
     //Binding the data using get() method of POJO object
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bindItems(padList[position])
-        val stopwatchPOJO: NoteItem = padList[position]
-        holder.bindItems(stopwatchPOJO)
+        val noteItem: NoteItem = padList[position]
+        holder.bindItems(noteItem)
+        
     }
 
 
