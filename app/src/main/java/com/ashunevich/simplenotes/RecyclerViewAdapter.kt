@@ -4,13 +4,14 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.NonNull
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ashunevich.simplenotes.databinding.NotesItemBinding
 
 
-class RecyclerViewAdapter(val entities: List<NoteEntity>) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
-    private  var padList: List<NoteEntity> = ArrayList()
+    private var padList: MutableList<NoteEntity> = mutableListOf()
     private lateinit var context:Context
     private lateinit var noteEntity: NoteEntity
     lateinit var onBind: UpdateCallbackInterface
@@ -23,18 +24,6 @@ class RecyclerViewAdapter(val entities: List<NoteEntity>) : RecyclerView.Adapter
             NotesItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         context = parent.context
         return MyViewHolder(itemBinding)
-            /*
-            val noteItem:NoteItem? = getAccountAtPosition(pos)
-            val intent = Intent(context, NoteActivity::class.java)
-            if (noteItem != null) {
-                intent.putExtra("itemId",noteItem.noteID.toString())
-                intent.putExtra("itemText",noteItem.noteText.toString())
-                intent.putExtra("itemTag",noteItem.noteTag.toString())
-                intent.putExtra("itemDate",noteItem.noteDate)
-                (context as Activity).startActivityForResult(intent, updateNoteRequestCode)
-            }
-             */
-
     }
 
     //Binding the data using get() method of POJO object
@@ -51,13 +40,9 @@ class RecyclerViewAdapter(val entities: List<NoteEntity>) : RecyclerView.Adapter
         return padList.size
     }
 
-    internal fun setNOtes(notes: List<NoteEntity>) {
-        this.padList = notes
-        notifyDataSetChanged()
-    }
 
 
-    fun getAccountAtPosition(position: Int): NoteEntity? {
+    fun getAccountAtPosition(position: Int): NoteEntity {
         return padList[position]
     }
 
@@ -69,6 +54,16 @@ class RecyclerViewAdapter(val entities: List<NoteEntity>) : RecyclerView.Adapter
             binding.noteView.text= noteEntity.noteText
             binding.tagView.text= noteEntity.noteTag
         }
+    }
+
+    fun swap(notes: MutableList<NoteEntity>) {
+        val diffCallback = RecyclerViewDiffUtil(padList,notes)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+       this.padList.clear()
+        this.padList.addAll(notes)
+
+        diffResult.dispatchUpdatesTo(this)
     }
 
 

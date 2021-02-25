@@ -13,13 +13,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ashunevich.simplenotes.databinding.ActivityMainBinding
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
     private lateinit var model: NoteViewModel
 
     private var binding: ActivityMainBinding? = null
-    private val listContentArr: List<NoteEntity> = ArrayList()
     private var adapter: RecyclerViewAdapter? = null
 
 
@@ -28,6 +26,10 @@ class MainActivity : AppCompatActivity() {
         const val createNoteRequestCode = 1
         const val updateNoteRequestCode = 2
         const val activityCode = "activityCode"
+
+        const val itemText = "itemText"
+        const val itemTag = "itemTag"
+        const val itemID = "itemID"
     }
 
 
@@ -44,32 +46,35 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra(activityCode, updateNoteRequestCode)
             startActivityForResult(intent, createNoteRequestCode) }
         attachItemTouchHelper()
+        setCallBackInterface()
 
+    }
+
+    private fun setCallBackInterface(){
         adapter!!.onBind =
-            object : UpdateCallbackInterface {
-                override fun onViewBound(viewHolder: RecyclerView.ViewHolder?, position: Int) {
-                    viewHolder?.itemView?.setOnClickListener {
-                        val noteEntity:NoteEntity? = adapter!!.getAccountAtPosition(position)
+                object : UpdateCallbackInterface {
+                    override fun onViewBound(viewHolder: RecyclerView.ViewHolder?, position: Int) {
+                        viewHolder?.itemView?.setOnClickListener {
+                            val noteEntity:NoteEntity = adapter!!.getAccountAtPosition(position)
 
-                        val intent =
-                            Intent(this@MainActivity, NoteActivity::class.java)
-                            intent.putExtra("itemText", noteEntity?.noteText.toString())
-                            intent.putExtra("itemTag", noteEntity?.noteTag.toString())
-                            intent.putExtra("itemDate", noteEntity?.noteDate.toString())
-                            intent.putExtra("itemID", noteEntity?.noteID)
+                            val intent =
+                                    Intent(this@MainActivity, NoteActivity::class.java)
+                            intent.putExtra(itemText, noteEntity.noteText.toString())
+                            intent.putExtra(itemTag, noteEntity.noteTag.toString())
+                            intent.putExtra(itemID, noteEntity.noteID)
                             intent.putExtra(activityCode, updateNoteRequestCode)
-                        startActivityForResult(intent, updateNoteRequestCode)
+                            startActivityForResult(intent, updateNoteRequestCode)
+                        }
                     }
                 }
-            }
     }
 
     private fun setRecyclerView(){
         model = ViewModelProvider(this).get(NoteViewModel::class.java)
-        adapter = RecyclerViewAdapter(listContentArr)
+        adapter = RecyclerViewAdapter()
         binding?.recyclerView?.layoutManager = LinearLayoutManager(this)
         binding?.recyclerView?.adapter = adapter
-        model.allNotes.observe(this, { notes -> notes?.let { adapter!!.setNOtes(it) } })
+        model.allNotes.observe(this, { notes -> notes?.let { adapter!!.swap(it as MutableList<NoteEntity>) } })
 
     }
 
@@ -88,10 +93,10 @@ class MainActivity : AppCompatActivity() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                val noteEntity: NoteEntity? = adapter!!.getAccountAtPosition(position)
-                if (noteEntity != null) {
+                val noteEntity: NoteEntity = adapter!!.getAccountAtPosition(position)
+
                     model.delete(noteEntity)
-                }
+
             }
         })
         helper.attachToRecyclerView(binding?.recyclerView)
@@ -103,23 +108,21 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == createNoteRequestCode && resultCode == Activity.RESULT_OK) {
             intentData?.let { data ->
-                val note =
-                    NoteEntity(
-                        getDate(),
-                        data.getStringExtra(NoteActivity.MAIN_TEXT),
-                        data.getStringExtra(NoteActivity.TAG_TEXT)
-                    )
+                val mainText:String? = data.getStringExtra(NoteActivity.MAIN_TEXT)
+                val tagText:String? =  data.getStringExtra(NoteActivity.TAG_TEXT)
+
+                val note = NoteEntity(tagText, mainText, getDate())
                 model.insert(note)
             }
         }
 
         else if (requestCode == updateNoteRequestCode && resultCode == Activity.RESULT_OK){
             intentData?.let { data ->
-                val note = NoteEntity(
-                    data.getStringExtra(NoteActivity.DATE_TEXT).toString(),
-                    data.getStringExtra(NoteActivity.MAIN_TEXT),
-                    data.getStringExtra(NoteActivity.TAG_TEXT),
-                    data.getIntExtra(NoteActivity.ID_TXT, 0),
+                val mainText:String? = data.getStringExtra(NoteActivity.MAIN_TEXT)
+                val tagText:String? =  data.getStringExtra(NoteActivity.TAG_TEXT)
+                val id:Int =  data.getIntExtra(NoteActivity.ID_TXT, 0)
+
+                val note = NoteEntity(tagText, mainText, getDate(), id,
                 )
                  model.update(note)
             }
@@ -138,4 +141,5 @@ class MainActivity : AppCompatActivity() {
         val df = SimpleDateFormat("d MMM, yyyy ", Locale.UK)
         return df.format(c)
     }
+
 }
