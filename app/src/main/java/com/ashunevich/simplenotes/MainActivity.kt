@@ -23,13 +23,13 @@ class MainActivity : AppCompatActivity() {
 
 
     companion object{
-        const val createNoteRequestCode = 1
-        const val updateNoteRequestCode = 2
-        const val activityCode = "activityCode"
+        const val CREATE_NOTE_CODE = 1
+        const val UPDATE_NOTE_CODE = 2
+        const val ACTIVITY_CODE = "activityCode"
 
-        const val itemText = "itemText"
-        const val itemTag = "itemTag"
-        const val itemID = "itemID"
+        const val ITEM_TEXT = "itemText"
+        const val ITEM_TAG = "itemTag"
+        const val ITEM_ID = "itemID"
     }
 
 
@@ -43,8 +43,8 @@ class MainActivity : AppCompatActivity() {
             this,
             NoteActivity::class.java
         )
-            intent.putExtra(activityCode, updateNoteRequestCode)
-            startActivityForResult(intent, createNoteRequestCode) }
+            intent.putExtra(ACTIVITY_CODE, CREATE_NOTE_CODE)
+            startActivityForResult(intent, CREATE_NOTE_CODE) }
         attachItemTouchHelper()
         setCallBackInterface()
 
@@ -59,11 +59,11 @@ class MainActivity : AppCompatActivity() {
 
                             val intent =
                                     Intent(this@MainActivity, NoteActivity::class.java)
-                            intent.putExtra(itemText, noteEntity.noteText.toString())
-                            intent.putExtra(itemTag, noteEntity.noteTag.toString())
-                            intent.putExtra(itemID, noteEntity.noteID)
-                            intent.putExtra(activityCode, updateNoteRequestCode)
-                            startActivityForResult(intent, updateNoteRequestCode)
+                            intent.putExtra(ITEM_TEXT, noteEntity.noteText.toString())
+                            intent.putExtra(ITEM_TAG, noteEntity.noteTag.toString())
+                            intent.putExtra(ITEM_ID, noteEntity.noteID)
+                            intent.putExtra(ACTIVITY_CODE, UPDATE_NOTE_CODE)
+                            startActivityForResult(intent, UPDATE_NOTE_CODE)
                         }
                     }
                 }
@@ -92,8 +92,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
-                val noteEntity: NoteEntity = adapter!!.getAccountAtPosition(position)
+                val noteEntity: NoteEntity = adapter!!.getAccountAtPosition(viewHolder.adapterPosition)
 
                     model.delete(noteEntity)
 
@@ -106,7 +105,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, intentData: Intent?) {
         super.onActivityResult(requestCode, resultCode, intentData)
 
-        if (requestCode == createNoteRequestCode && resultCode == Activity.RESULT_OK) {
+        if (requestCode == CREATE_NOTE_CODE && resultCode == Activity.RESULT_OK) {
             intentData?.let { data ->
                 val mainText:String? = data.getStringExtra(NoteActivity.MAIN_TEXT)
                 val tagText:String? =  data.getStringExtra(NoteActivity.TAG_TEXT)
@@ -116,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        else if (requestCode == updateNoteRequestCode && resultCode == Activity.RESULT_OK){
+        else if (requestCode == UPDATE_NOTE_CODE && resultCode == Activity.RESULT_OK){
             intentData?.let { data ->
                 val mainText:String? = data.getStringExtra(NoteActivity.MAIN_TEXT)
                 val tagText:String? =  data.getStringExtra(NoteActivity.TAG_TEXT)

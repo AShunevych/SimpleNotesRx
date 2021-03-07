@@ -4,7 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.ashunevich.simplenotes.MainActivity.Companion.ACTIVITY_CODE
+import com.ashunevich.simplenotes.MainActivity.Companion.ITEM_ID
+import com.ashunevich.simplenotes.MainActivity.Companion.ITEM_TAG
+import com.ashunevich.simplenotes.MainActivity.Companion.ITEM_TEXT
 import com.ashunevich.simplenotes.databinding.NoteActivityBinding
 
 class NoteActivity:AppCompatActivity() {
@@ -16,12 +21,13 @@ class NoteActivity:AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = NoteActivityBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
+
         binding?.submitButton?.setOnClickListener { okOkResult() }
 
-            binding!!.noteText.setText(intent.getStringExtra(MainActivity.itemText))
-            binding!!.tagText.setText(intent.getStringExtra(MainActivity.itemTag))
-            id = intent.getIntExtra(MainActivity.itemID,0)
-        intentCode = intent.getIntExtra(MainActivity.activityCode,0)
+            binding!!.noteText.setText(getIntentText(ITEM_TEXT))
+            binding!!.tagText.setText(getIntentText(ITEM_TAG))
+            id = getIntentInt(ITEM_ID)
+        intentCode = getIntentInt(ACTIVITY_CODE)
 
     }
 
@@ -38,13 +44,25 @@ class NoteActivity:AppCompatActivity() {
             finish()
         }
         else{
-            replyIntent.putExtra(MAIN_TEXT,binding?.noteText?.text.toString())
-            replyIntent.putExtra(TAG_TEXT,binding?.tagText?.text.toString())
+            replyIntent.putExtra(MAIN_TEXT,getText(binding?.noteText))
+            replyIntent.putExtra(TAG_TEXT,getText(binding?.tagText))
             if(intentCode == 2) {
                 replyIntent.putExtra(ID_TXT,id)
             }
             setResult(Activity.RESULT_OK,replyIntent)
             finish()
         }
+    }
+
+    private fun getText (editText: EditText?):String{
+        return editText!!.text.toString()
+    }
+
+    private fun getIntentText(intentText:String): String? {
+        return intent.getStringExtra(intentText)
+    }
+
+    private fun getIntentInt(intentText:String): Int {
+        return intent.getIntExtra(intentText,0)
     }
 }
