@@ -1,2 +1,2 @@
 # SimpleNotes   
-Kotlin MVVM pattern demo: RecyclerView + ViewModel + Android Room (+ CRUD)
+Kotlin MVVM pattern demo: RecyclerView + ViewModel + Android Room
