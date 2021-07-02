@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.ashunevich.simplenotes.MainActivity.Companion.ACTIVITY_CODE
+import com.ashunevich.simplenotes.MainActivity.Companion.CREATE_NOTE_CODE
 import com.ashunevich.simplenotes.MainActivity.Companion.ITEM_ID
 import com.ashunevich.simplenotes.MainActivity.Companion.ITEM_TAG
 import com.ashunevich.simplenotes.MainActivity.Companion.ITEM_TEXT
@@ -35,6 +36,7 @@ class NoteActivity:AppCompatActivity() {
         const val MAIN_TEXT = "mainText"
         const val TAG_TEXT = "tagText"
         const val ID_TXT = "idText"
+        const val RESULT_ACTIVITY = "resultActivity"
     }
 
     private fun okOkResult(){
@@ -44,9 +46,10 @@ class NoteActivity:AppCompatActivity() {
             finish()
         }
         else{
+            replyIntent.putExtra(RESULT_ACTIVITY,intentCode)
             replyIntent.putExtra(MAIN_TEXT,getText(binding?.noteText))
             replyIntent.putExtra(TAG_TEXT,getText(binding?.tagText))
-            if(intentCode == 2) {
+            if(intentCode == CREATE_NOTE_CODE) {
                 replyIntent.putExtra(ID_TXT,id)
             }
             setResult(Activity.RESULT_OK,replyIntent)

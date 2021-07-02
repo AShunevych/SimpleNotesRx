@@ -5,22 +5,27 @@ import android.content.Intent
 import android.os.Bundle
 
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ashunevich.simplenotes.NoteActivity.Companion.ID_TXT
+import com.ashunevich.simplenotes.NoteActivity.Companion.MAIN_TEXT
+import com.ashunevich.simplenotes.NoteActivity.Companion.RESULT_ACTIVITY
+import com.ashunevich.simplenotes.NoteActivity.Companion.TAG_TEXT
 import com.ashunevich.simplenotes.databinding.ActivityMainBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var startActivityForResult: ActivityResultLauncher<Intent>
     private lateinit var model: NoteViewModel
 
     private var binding: ActivityMainBinding? = null
     private var adapter: RecyclerViewAdapter? = null
-
-
 
     companion object{
         const val CREATE_NOTE_CODE = 1
@@ -33,6 +38,11 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    override fun onStart() {
+        setResultRequest()
+        super.onStart()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -44,9 +54,38 @@ class MainActivity : AppCompatActivity() {
             NoteActivity::class.java
         )
             intent.putExtra(ACTIVITY_CODE, CREATE_NOTE_CODE)
-            startActivityForResult(intent, CREATE_NOTE_CODE) }
+            startActivityForResult.launch(intent) }
         attachItemTouchHelper()
         setCallBackInterface()
+
+    }
+
+    private fun setResultRequest(){
+        startActivityForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+            if (it.resultCode == Activity.RESULT_OK) {
+                val resultCode:Int? = it.data?.getIntExtra(RESULT_ACTIVITY,0)
+                val mainText:String? = it.data?.getStringExtra(MAIN_TEXT)
+                val tagText:String? = it.data?.getStringExtra(TAG_TEXT)
+
+                if(resultCode == CREATE_NOTE_CODE){
+                    val note = NoteEntity(tagText, mainText, getDate())
+                    model.insert(note)
+                }
+                else{
+                    val id:Int? = it.data?.getIntExtra(ID_TXT, 0)
+                    val note = NoteEntity(tagText, mainText, getDate(), id)
+                    model.update(note)
+                }
+            }
+            else{
+                Toast.makeText(
+                    applicationContext,
+                    "NOT SAVED",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+        }
 
     }
 
@@ -63,7 +102,7 @@ class MainActivity : AppCompatActivity() {
                             intent.putExtra(ITEM_TAG, noteEntity.noteTag.toString())
                             intent.putExtra(ITEM_ID, noteEntity.noteID)
                             intent.putExtra(ACTIVITY_CODE, UPDATE_NOTE_CODE)
-                            startActivityForResult(intent, UPDATE_NOTE_CODE)
+                            startActivityForResult.launch(intent)
                         }
                     }
                 }
@@ -101,39 +140,6 @@ class MainActivity : AppCompatActivity() {
         helper.attachToRecyclerView(binding?.recyclerView)
     }
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intentData: Intent?) {
-        super.onActivityResult(requestCode, resultCode, intentData)
-
-        if (requestCode == CREATE_NOTE_CODE && resultCode == Activity.RESULT_OK) {
-            intentData?.let { data ->
-                val mainText:String? = data.getStringExtra(NoteActivity.MAIN_TEXT)
-                val tagText:String? =  data.getStringExtra(NoteActivity.TAG_TEXT)
-
-                val note = NoteEntity(tagText, mainText, getDate())
-                model.insert(note)
-            }
-        }
-
-        else if (requestCode == UPDATE_NOTE_CODE && resultCode == Activity.RESULT_OK){
-            intentData?.let { data ->
-                val mainText:String? = data.getStringExtra(NoteActivity.MAIN_TEXT)
-                val tagText:String? =  data.getStringExtra(NoteActivity.TAG_TEXT)
-                val id:Int =  data.getIntExtra(NoteActivity.ID_TXT, 0)
-
-                val note = NoteEntity(tagText, mainText, getDate(), id,
-                )
-                 model.update(note)
-            }
-        }
-            else{
-            Toast.makeText(
-                applicationContext,
-                "NOT SAVED",
-                Toast.LENGTH_LONG
-            ).show()
-            }
-}
 
     private fun getDate(): String? {
         val c = Calendar.getInstance().time

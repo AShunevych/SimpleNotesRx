@@ -11,6 +11,6 @@ class NoteEntity(
                  @ColumnInfo(name = "note_tag") val noteTag: String?,
                  @ColumnInfo(name = "note_text") val noteText: String?,
                  @ColumnInfo(name = "note_date") val noteDate:String?,
-                 @PrimaryKey (autoGenerate = true) @ColumnInfo val noteID: Int = 0
+                 @PrimaryKey (autoGenerate = true) @ColumnInfo val noteID: Int? = 0
 )
 
