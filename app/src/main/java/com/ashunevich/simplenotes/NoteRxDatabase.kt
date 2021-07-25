@@ -6,23 +6,23 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(entities = [NoteEntity::class],version = 1,exportSchema = false)
-abstract class NoteDatabase : RoomDatabase() {
+abstract class NoteRxDatabase : RoomDatabase() {
 
-    abstract fun notesDao():NoteDao
+    abstract fun notesDao():NoteRxDao
 
     companion object {
         @Volatile
-        private var INSTANCE: NoteDatabase? = null
+        private var INSTANCE: NoteRxDatabase? = null
 
         fun getDatabase(
                 context: Context
-        ): NoteDatabase {
+        ): NoteRxDatabase {
             // if the INSTANCE is not null, then return it,
             // if it is, then create the database
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    NoteDatabase::class.java,
+                    NoteRxDatabase::class.java,
                     "note_database"
                 )
                     // Wipes and rebuilds instead of migrating if no Migration object.

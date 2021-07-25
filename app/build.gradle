@@ -9,7 +9,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "com.ashunevich.simplenotes"
+        applicationId "com.ashunevich.simplenotesRx"
         minSdkVersion 28
         targetSdkVersion 30
         versionCode 1
@@ -44,8 +44,13 @@ android {
 
 dependencies {
     def room_version = "2.3.0"
+    def activity_version = "1.2.4"
+
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.6.0'
+    implementation("androidx.activity:activity-ktx:$activity_version")
+
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
@@ -60,6 +65,9 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     androidTestImplementation "androidx.room:room-testing:$room_version"
 
+    implementation "io.reactivex.rxjava3:rxkotlin:3.0.1"
+    implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
+    implementation "androidx.room:room-rxjava3:$room_version"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutines"
