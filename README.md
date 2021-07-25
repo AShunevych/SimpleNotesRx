@@ -1,2 +1,2 @@
-# SimpleNotes   
-Kotlin MVVM pattern demo: RecyclerView + ViewModel + Android Room
+# SimpleNotesRx  
+Same as [SimpleNotes](https://github.com/AShunevych/SimpleNotesRx), but using RxKotlin
